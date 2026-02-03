@@ -58,3 +58,25 @@ export const getApplicationById = async (req: Request<RequestParams>, res: Respo
         return res.status(500).json({error: "Internal server error"})
     }
 }
+
+export const updateApplicationById = async (req: Request<RequestParams>, res: Response) => {
+    try {
+        const { id } = req.params;   
+        const newValues = req.body
+        if (!id) {
+            return res.status(404).json({error: "ID is required."})
+        }
+        const application = await prisma.application.update({
+            where: {id: parseInt(id)},
+            data: newValues
+        });
+        if (!application) {
+            return res.status(404).json({error: "Current application not found."})
+        }
+        return res.status(202).json(application)
+         
+    } catch (error) {
+        console.error("Error in updateApplication controller. ", error);
+        return res.status(500).json({error: "Internal server error."})
+    }
+}
