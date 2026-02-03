@@ -18,3 +18,17 @@ export const createApplication = async (req: Request, res: Response) => {
         res.status(500).json({error: "Internal server error."})
     }
 }
+
+export const getAllApplications = async (req: Request, res: Response) => {
+    try {
+        const applications = await prisma.application.findMany({
+            orderBy: {
+                createdAt: "desc"
+            }
+        });
+        return res.status(200).json(applications);
+    } catch (error) {
+        console.error("Error in getAllApplications controller. ", error)
+        res.status(500).json({error: "Internal server error"})
+    }
+}
