@@ -32,3 +32,29 @@ export const getAllApplications = async (req: Request, res: Response) => {
         res.status(500).json({error: "Internal server error"})
     }
 }
+
+interface RequestParams {
+    id: string;
+}
+
+export const getApplicationById = async (req: Request<RequestParams>, res: Response) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ error: "ID is required" });
+        }
+        const application = await prisma.application.findUnique({
+            where: {
+                id: parseInt(id)
+            }
+        })
+
+        if (!application) {
+            return res.status(404).json({error: "Current application not found."});
+        }
+        return res.status(200).json(application);
+    } catch (error) {
+        console.error("Error in getApplicationById controller. ", error)
+        return res.status(500).json({error: "Internal server error"})
+    }
+}
