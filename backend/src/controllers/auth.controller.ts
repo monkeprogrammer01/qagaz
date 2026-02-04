@@ -79,3 +79,25 @@ export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
         return res.status(500).json("Internal server error.")
     }
 }
+
+interface ProfileBody {
+    adminId: string
+}
+export const profile = async (req: Request<{}, {}, ProfileBody>, res: Response) => {
+    try {
+        const {adminId} = req.body;
+        const admin = await prisma.admin.findUnique({
+            where: {id: parseInt(adminId)}
+        })
+        if (!admin) return res.status(404).json("Admin not found.")
+        const adminWithoutPassword = {
+            email: admin.email,
+        }
+        return res.status(200).json({
+            success: true,
+            admin: adminWithoutPassword
+        })
+        } catch (error) {
+        
+    }
+}
