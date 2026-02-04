@@ -13,22 +13,22 @@ interface SignupBody {
 
 export const signup = async (req: Request<{}, {}, SignupBody>, res: Response) => {
     try {
-        const {email, password, name} = req.body;
+        const { email, password, name } = req.body;
         if (!email || !password || !name) {
-            return res.status(400).json({error: "All fields are required"})
+            return res.status(400).json({ error: "All fields are required" })
         }
 
         if (password.length < 8) {
-            return res.status(400).json({error: "Password must have at least 8 length"})
+            return res.status(400).json({ error: "Password must have at least 8 length" })
         }
 
         const isExists = await prisma.admin.findUnique({
-            where: {email}
+            where: { email }
         })
         if (isExists) {
-            return res.status(400).json({error: "Admin with such email exists"})
+            return res.status(400).json({ error: "Admin with such email exists" })
         }
-        
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         const newAdmin = await prisma.admin.create({
@@ -46,7 +46,7 @@ export const signup = async (req: Request<{}, {}, SignupBody>, res: Response) =>
         return res.status(201).json(adminWithoutPassword)
     } catch (error) {
         console.error("Error in signup controller. ", error);
-        return res.status(500).json({error: "Internal server error."})
+        return res.status(500).json({ error: "Internal server error." })
     }
 }
 
@@ -58,13 +58,13 @@ interface LoginBody {
 export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
     try {
         const { email, password } = req.body;
-        if (!email || !password) return res.status(400).json({error: "Email and password are required."})
+        if (!email || !password) return res.status(400).json({ error: "Email and password are required." })
         const admin = await prisma.admin.findUnique({
-            where: {email}
+            where: { email }
         })
-        if (!admin) return res.status(400).json({error: "Invalid email or password."})
+        if (!admin) return res.status(400).json({ error: "Invalid email or password." })
         const isPasswordCorrect = await bcrypt.compare(password, admin.password)
-        if (!isPasswordCorrect) return res.status(400).json({error: "Invalid email or password."})
+        if (!isPasswordCorrect) return res.status(400).json({ error: "Invalid email or password." })
         const token = generateToken(admin.id.toString(), res);
         const adminWithoutPassword = {
             email: admin.email,
@@ -90,7 +90,7 @@ export const profile = async (req: Request<{}, {}, ProfileBody>, res: Response) 
             return res.status(401).json({ error: "Unauthorized." });
         }
         const admin = await prisma.admin.findUnique({
-            where: {id: parseInt(adminId)}
+            where: { id: parseInt(adminId) }
         })
         if (!admin) return res.status(404).json("Admin not found.")
         const adminWithoutPassword = {
@@ -100,7 +100,8 @@ export const profile = async (req: Request<{}, {}, ProfileBody>, res: Response) 
             success: true,
             admin: adminWithoutPassword
         })
-        } catch (error) {
-        
+    } catch (error) {
+        console.error("Error in profile controller. ", error)
+        return res.status(500).json({error: "Internal server error."})
     }
 }
