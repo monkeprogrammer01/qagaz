@@ -1,0 +1,15 @@
+meta {
+  name: Create new application
+  type: http
+  seq: 2
+}
+
+delete {
+  url: http://localhost:5001/api/applications?id=2
+  body: json
+  auth: none
+}
+
+params:query {
+  id: 2
+}

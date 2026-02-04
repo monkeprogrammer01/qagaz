@@ -70,13 +70,29 @@ export const updateApplicationById = async (req: Request<RequestParams>, res: Re
             where: {id: parseInt(id)},
             data: newValues
         });
-        if (!application) {
-            return res.status(404).json({error: "Current application not found."})
-        }
-        return res.status(202).json(application)
+        return res.status(200).json(application)
          
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("Error in updateApplication controller. ", error);
+        if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
+            return res.status(404).json({ error: "Application not found." });
+        }
+        return res.status(500).json({error: "Internal server error."})
+    }
+}
+
+export const deleteApplicationById = async (req: Request<RequestParams>, res: Response) => {
+    try {
+        const { id } = req.params;
+        const application = await prisma.application.delete({
+            where: {id: parseInt(id)}
+        })
+        return res.status(200).json({message: "Application deleted succssfully"});
+    } catch (error: unknown) {
+        console.error("Error in deleteApplicationById controller. ", error)
+        if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
+            return res.status(404).json({ error: "Application not found." });
+        }
         return res.status(500).json({error: "Internal server error."})
     }
 }
