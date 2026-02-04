@@ -85,7 +85,10 @@ interface ProfileBody {
 }
 export const profile = async (req: Request<{}, {}, ProfileBody>, res: Response) => {
     try {
-        const {adminId} = req.body;
+        const adminId = req.adminId;
+        if (!adminId) {
+            return res.status(401).json({ error: "Unauthorized." });
+        }
         const admin = await prisma.admin.findUnique({
             where: {id: parseInt(adminId)}
         })
