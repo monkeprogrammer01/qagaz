@@ -51,9 +51,31 @@ export const signup = async (req: Request<{}, {}, SignupBody>, res: Response) =>
 }
 
 interface LoginBody {
-    
+    email: string,
+    password: string
 }
 
 export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
-
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) return res.status(400).json({error: "Email and password are required."})
+        const admin = await prisma.admin.findUnique({
+            where: {email}
+        })
+        if (!admin) return res.status(400).json({error: "Invalid email or password."})
+        const isPasswordCorrect = await bcrypt.compare(password, admin.password)
+        if (!isPasswordCorrect) return res.status(400).json({error: "Invalid email or password."})
+        const token = generateToken(admin.id.toString(), res);
+        const adminWithoutPassword = {
+            email: admin.email,
+            token: token
+        }
+        return res.status(200).json({
+            success: true,
+            admin: adminWithoutPassword
+        })
+    } catch (error) {
+        console.error("Error in login controller. ", error);
+        return res.status(500).json("Internal server error.")
+    }
 }
