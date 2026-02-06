@@ -12,5 +12,5 @@ app.use(express.json())
 app.use("/api/applications", applicationRouter)
 app.use("/api/auth", authRouter)
 app.listen(PORT, () => {
-    console.log(`Cервер запущен на http://localhost:${PORT}`)
+    console.log(`Server works on http://localhost:${PORT}`)
 })
