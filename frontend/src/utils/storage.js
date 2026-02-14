@@ -1,24 +1,23 @@
-// Утилиты для работы с localStorage
 
-export const getBookings = () => {
+export const getApplications = () => {
     const bookings = localStorage.getItem('bookings');
     return bookings ? JSON.parse(bookings) : [];
 };
 
-export const saveBookings = (bookings) => {
-    localStorage.setItem('bookings', JSON.stringify(bookings));
+export const saveApplications = (application) => {
+    localStorage.setItem('bookings', JSON.stringify(application));
 };
 
-export const getUser = () => {
-    const user = localStorage.getItem('currentUser');
+export const getAdmin = () => {
+    const user = localStorage.getItem('currentAdmin');
     return user ? JSON.parse(user) : null;
 };
 
-export const setUser = (user) => {
-    if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user));
+export const setAdmin = (admin) => {
+    if (admin) {
+        localStorage.setItem('currentAdmin', JSON.stringify(admin));
     } else {
-        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentAdmin');
     }
 };
 
