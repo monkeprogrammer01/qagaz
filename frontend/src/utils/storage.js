@@ -23,7 +23,7 @@ export const setAdmin = (admin) => {
 
 // Демо-данные для первого запуска
 export const initSampleData = () => {
-    if (getBookings().length === 0) {
+    if (getApplications().length === 0) {
         const sampleBookings = [
             {
                 id: 1,

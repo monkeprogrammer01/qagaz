@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { getUser, setUser } from './utils/storage.js';
+import { getAdmin, setAdmin } from './utils/storage.js';
 import Header from './components/Header.jsx';
 import SignIn from './components/SignIn.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 
 const App = () => {
-    const [user, setCurrentUser] = useState(null);
+    const [admin, setCurrentAdmin] = useState(null);
 
     useEffect(() => {
-        const savedUser = getUser();
-        if (savedUser) {
-            setCurrentUser(savedUser);
+        const savedAdmin = getAdmin();
+        if (savedAdmin) {
+            setCurrentAdmin(savedAdmin);
         }
     }, []);
 
-    const handleSignIn = (userData) => {
-        setCurrentUser(userData);
+    const handleSignIn = (adminData) => {
+        setCurrentAdmin(adminData);
     };
 
     const handleLogout = () => {
-        setUser(null);
-        setCurrentUser(null);
+        setAdmin(null);
+        setCurrentAdmin(null);
     };
 
-    if (!user) {
+    if (!admin) {
         return (
             <div className="app">
                 <SignIn onSignIn={handleSignIn} />
@@ -33,7 +33,7 @@ const App = () => {
 
     return (
         <div className="app">
-            <Header user={user} onLogout={handleLogout} />
+            <Header admin={admin} onLogout={handleLogout} />
             <main className="main-content">
                 <AdminPanel />
             </main>

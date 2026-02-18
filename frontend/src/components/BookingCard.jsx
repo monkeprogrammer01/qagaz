@@ -18,59 +18,59 @@ const getStatusText = (status) => {
     }
 };
 
-const BookingCard = ({ booking, onAssignAdmin, onMarkComplete }) => {
+const ApplicationCard = ({ application, onAssignAdmin, onMarkComplete }) => {
     const handleAssign = () => {
         const adminId = prompt('Enter admin ID:');
-        if (adminId) onAssignAdmin(booking.id, adminId);
+        if (adminId) onAssignAdmin(application.id, adminId);
     };
 
     return (
         <div className="booking-item">
             <div className="booking-top">
-                <div className="booking-number">#{booking.id}</div>
-                <div className={`status-badge ${getStatusClass(booking.status)}`}>
-                    {getStatusText(booking.status)}
+                <div className="booking-number">#{application.id}</div>
+                <div className={`status-badge ${getStatusClass(application.status)}`}>
+                    {getStatusText(application.status)}
                 </div>
             </div>
 
             <div className="booking-info">
                 <div className="info-line">
                     <span className="info-key">Client</span>
-                    <span className="info-value">{booking.clientName}</span>
+                    <span className="info-value">{application.clientName}</span>
                 </div>
                 <div className="info-line">
                     <span className="info-key">Phone</span>
-                    <span className="info-value">{booking.phone}</span>
+                    <span className="info-value">{application.phone}</span>
                 </div>
                 <div className="info-line">
                     <span className="info-key">Room</span>
-                    <span className="info-value">{booking.room}</span>
+                    <span className="info-value">{application.room}</span>
                 </div>
                 <div className="info-line">
                     <span className="info-key">Time</span>
                     <span className="info-value">
-                        {new Date(booking.time).toLocaleString('en-US')}
+                        {new Date(application.time).toLocaleString('en-US')}
                     </span>
                 </div>
-                {booking.adminId && (
+                {application.adminId && (
                     <div className="info-line">
                         <span className="info-key">Admin</span>
-                        <span className="info-value">{booking.adminId}</span>
+                        <span className="info-value">{application.adminId}</span>
                     </div>
                 )}
             </div>
 
-            {(booking.status === 'new' || booking.status === 'assigned') && (
+            {(application.status === 'new' || application.status === 'assigned') && (
                 <div className="booking-footer">
-                    {booking.status === 'new' && (
+                    {application.status === 'new' && (
                         <button className="btn btn-primary" onClick={handleAssign}>
                             Assign Admin
                         </button>
                     )}
-                    {booking.status === 'assigned' && (
+                    {application.status === 'assigned' && (
                         <button
                             className="btn btn-success"
-                            onClick={() => onMarkComplete(booking.id)}
+                            onClick={() => onMarkComplete(application.id)}
                         >
                             Mark Complete
                         </button>
@@ -81,4 +81,4 @@ const BookingCard = ({ booking, onAssignAdmin, onMarkComplete }) => {
     );
 };
 
-export default BookingCard;
+export default ApplicationCard;

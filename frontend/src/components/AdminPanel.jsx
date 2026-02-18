@@ -1,43 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { getBookings, saveBookings } from '../utils/storage';
-import BookingCard from './BookingCard';
+import { getApplications, saveApplications } from '../utils/storage';
+import ApplicationCard from './BookingCard';
 
 const FILTERS = ['all', 'new', 'assigned', 'completed'];
 
 const AdminPanel = () => {
-    const [bookings, setBookings] = useState([]);
+    const [applications, setApplications] = useState([]);
     const [filter, setFilter]     = useState('all');
 
     useEffect(() => {
-        setBookings(getBookings());
+        setApplications(getApplications());
     }, []);
 
-    const updateBookings = (updated) => {
-        saveBookings(updated);
-        setBookings(updated);
+    const updateApplications = (updated) => {
+        saveApplications(updated);
+        setApplications(updated);
     };
 
     const handleAssignAdmin = (id, adminId) => {
         if (!adminId || !adminId.trim()) return;
-        const updated = bookings.map(b =>
+        const updated = applications.map(b =>
             b.id === id ? { ...b, adminId, status: 'assigned' } : b
         );
-        updateBookings(updated);
+        updateApplications(updated);
         alert('Admin assigned successfully!');
     };
 
     const handleMarkComplete = (id) => {
-        const updated = bookings.map(b =>
-            b.id === id ? { ...b, status: 'completed' } : b
+        const updated = applications.map(b =>
+            a.id === id ? { ...a, status: 'completed' } : b
         );
-        updateBookings(updated);
+        updateApplications(updated);
     };
 
     const filtered = filter === 'all'
-        ? bookings
-        : bookings.filter(b => b.status === filter);
+        ? applications
+        : applications.filter(b => b.status === filter);
 
-    const countByStatus = (status) => bookings.filter(b => b.status === status).length;
+    const countByStatus = (status) => applications.filter(b => b.status === status).length;
 
     return (
         <div>
@@ -48,7 +48,7 @@ const AdminPanel = () => {
                         className={`tab ${filter === 'all' ? 'active' : ''}`}
                         onClick={() => setFilter('all')}
                     >
-                        All ({bookings.length})
+                        All ({applications.length})
                     </button>
                     {['new', 'assigned', 'completed'].map(status => (
                         <button
@@ -64,12 +64,12 @@ const AdminPanel = () => {
 
             <div className="bookings-container">
                 {filtered.length === 0 ? (
-                    <div className="empty-state">No bookings found</div>
+                    <div className="empty-state">No applications found</div>
                 ) : (
-                    filtered.map(booking => (
-                        <BookingCard
-                            key={booking.id}
-                            booking={booking}
+                    filtered.map(application => (
+                        <ApplicationCard
+                            key={application.id}
+                            application={application}
                             onAssignAdmin={handleAssignAdmin}
                             onMarkComplete={handleMarkComplete}
                         />

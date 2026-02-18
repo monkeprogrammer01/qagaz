@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { setUser } from '../utils/storage';
+import { setAdmin } from '../utils/storage';
 
 const SignIn = ({ onSignIn }) => {
     const [formData, setFormData] = useState({
@@ -49,12 +49,12 @@ const SignIn = ({ onSignIn }) => {
 
         // Простая аутентификация (демо: любой email/телефон с паролем "admin")
         if (formData.password === 'admin') {
-            const user = {
+            const admin = {
                 identifier: formData.identifier,
                 loginTime: new Date().toISOString()
             };
-            setUser(user);
-            onSignIn(user);
+            setAdmin(admin);
+            onSignIn(admin);
         } else {
             setErrors({ password: 'Invalid credentials. Use password: admin' });
         }
