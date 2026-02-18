@@ -1,48 +1,95 @@
 import React, { useState, useEffect } from 'react';
-import { getApplications, saveApplications } from '../utils/storage';
+import { getApplications, updateApplication } from '../../api/applications.js';
 import ApplicationCard from './BookingCard';
-
-const FILTERS = ['all', 'new', 'assigned', 'completed'];
 
 const AdminPanel = () => {
     const [applications, setApplications] = useState([]);
-    const [filter, setFilter]     = useState('all');
+    const [filter, setFilter] = useState('all');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        setApplications(getApplications());
+        loadApplications();
     }, []);
 
-    const updateApplications = (updated) => {
-        saveApplications(updated);
-        setApplications(updated);
+    const loadApplications = async () => {
+        try {
+            setLoading(true);
+            const data = await getApplications();
+            setApplications(data);
+            setError(null);
+        } catch (err) {
+            console.error('Failed to load applications:', err);
+            setError('Failed to load applications');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleAssignAdmin = (id, adminId) => {
+    const handleAssignAdmin = async (id, adminId) => {
         if (!adminId || !adminId.trim()) return;
-        const updated = applications.map(b =>
-            b.id === id ? { ...b, adminId, status: 'assigned' } : b
-        );
-        updateApplications(updated);
-        alert('Admin assigned successfully!');
+        
+        try {
+            // Обновить в БД
+            await updateApplication(id, { 
+                adminId, 
+                status: 'assigned' 
+            });
+            
+            // Обновить локальный state
+            setApplications(prev => 
+                prev.map(app => 
+                    app.id === id 
+                        ? { ...app, adminId, status: 'assigned' } 
+                        : app
+                )
+            );
+            
+            alert('Admin assigned successfully!');
+        } catch (err) {
+            console.error('Failed to assign admin:', err);
+            alert('Failed to assign admin');
+        }
     };
 
-    const handleMarkComplete = (id) => {
-        const updated = applications.map(b =>
-            a.id === id ? { ...a, status: 'completed' } : b
-        );
-        updateApplications(updated);
+    const handleMarkComplete = async (id) => {
+        try {
+            // Обновить в БД
+            await updateApplication(id, { status: 'completed' });
+            
+            // Обновить локальный state
+            setApplications(prev => 
+                prev.map(app => 
+                    app.id === id 
+                        ? { ...app, status: 'completed' } 
+                        : app
+                )
+            );
+        } catch (err) {
+            console.error('Failed to mark complete:', err);
+            alert('Failed to update status');
+        }
     };
 
     const filtered = filter === 'all'
         ? applications
-        : applications.filter(b => b.status === filter);
+        : applications.filter(app => app.status === filter);
 
-    const countByStatus = (status) => applications.filter(b => b.status === status).length;
+    const countByStatus = (status) => 
+        applications.filter(app => app.status === status).length;
+
+    if (loading) {
+        return <div className="loading">Loading applications...</div>;
+    }
+
+    if (error) {
+        return <div className="error">{error}</div>;
+    }
 
     return (
         <div>
             <div className="panel-header">
-                <h1 className="panel-title">Booking Management</h1>
+                <h1 className="panel-title">Application Management</h1>
                 <div className="tabs">
                     <button
                         className={`tab ${filter === 'all' ? 'active' : ''}`}

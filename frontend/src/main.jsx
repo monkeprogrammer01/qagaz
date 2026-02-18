@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { initSampleData } from './utils/storage';
+import { initSampleData } from '../api/applications.js';
 import './index.css';
 
-// Инициализируем демо-данные при первом запуске
 initSampleData();
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { setAdmin } from '../utils/storage';
+import { setAdmin } from '../../api/applications.js';
 
 const SignIn = ({ onSignIn }) => {
     const [formData, setFormData] = useState({
