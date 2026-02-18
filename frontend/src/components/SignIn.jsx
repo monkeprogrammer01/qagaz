@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { setAdmin } from '../../api/applications.js';
+import { login } from '../../api/applications.js';
 
 const SignIn = ({ onSignIn }) => {
     const [formData, setFormData] = useState({
-        identifier: '',
+        email: '',
         password: '',
     });
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,20 +26,22 @@ const SignIn = ({ onSignIn }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!formData.identifier.trim()) {
-            newErrors.identifier = 'Email or phone is required';
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Email is invalid';
         }
 
         if (!formData.password) {
             newErrors.password = 'Password is required';
-        } else if (formData.password.length < 4) {
-            newErrors.password = 'Password must be at least 4 characters';
+        } else if (formData.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters';
         }
 
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const newErrors = validateForm();
@@ -47,16 +50,23 @@ const SignIn = ({ onSignIn }) => {
             return;
         }
 
-        // Простая аутентификация (демо: любой email/телефон с паролем "admin")
-        if (formData.password === 'admin') {
-            const admin = {
-                identifier: formData.identifier,
-                loginTime: new Date().toISOString()
-            };
-            setAdmin(admin);
+        try {
+            setLoading(true);
+            setErrors({});
+            
+            // Вызов API логина
+            const admin = await login(formData.email, formData.password);
+            
+            // Успешный логин
             onSignIn(admin);
-        } else {
-            setErrors({ password: 'Invalid credentials. Use password: admin' });
+            
+        } catch (error) {
+            console.error('Login failed:', error);
+            setErrors({ 
+                password: error.response?.data?.error || 'Invalid email or password' 
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -70,20 +80,21 @@ const SignIn = ({ onSignIn }) => {
 
                 <form onSubmit={handleSubmit} className="signin-form">
                     <div className="input-group">
-                        <label className="input-label" htmlFor="identifier">
-                            Email or Phone Number
+                        <label className="input-label" htmlFor="email">
+                            Email
                         </label>
                         <input
-                            type="text"
-                            id="identifier"
-                            name="identifier"
-                            value={formData.identifier}
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
                             onChange={handleChange}
-                            className={`input-field ${errors.identifier ? 'error' : ''}`}
-                            placeholder="Enter your email or phone"
+                            className={`input-field ${errors.email ? 'error' : ''}`}
+                            placeholder="admin@example.com"
+                            disabled={loading}
                         />
-                        {errors.identifier && (
-                            <span className="error-text">{errors.identifier}</span>
+                        {errors.email && (
+                            <span className="error-text">{errors.email}</span>
                         )}
                     </div>
 
@@ -99,14 +110,15 @@ const SignIn = ({ onSignIn }) => {
                             onChange={handleChange}
                             className={`input-field ${errors.password ? 'error' : ''}`}
                             placeholder="Enter your password"
+                            disabled={loading}
                         />
                         {errors.password && (
                             <span className="error-text">{errors.password}</span>
                         )}
                     </div>
 
-                    <button type="submit" className="signin-btn">
-                        Sign In
+                    <button type="submit" className="signin-btn" disabled={loading}>
+                        {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
             </div>
