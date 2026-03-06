@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.EXPRESS_APP_API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true, 
 });
 
@@ -26,10 +26,17 @@ API.interceptors.response.use(
 export const login = async (email, password) => {
     const { data } = await API.post("/auth/login", { email, password });
   
-    localStorage.setItem("currentAdmin", JSON.stringify(data.admin));
-    localStorage.setItem("token", data.admin.token);
+    const admin = data?.admin;
+    const token = admin?.token || data?.token;
   
-    return data.admin; 
+    if (!admin || !token) {
+      throw new Error(data?.error || "Login response has no token/admin");
+    }
+  
+    localStorage.setItem("currentAdmin", JSON.stringify({ ...admin, token }));
+    localStorage.setItem("token", token);
+  
+    return { ...admin, token };
   };
 
 export const logout = async () => {
