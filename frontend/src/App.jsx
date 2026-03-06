@@ -9,22 +9,36 @@ import ClientApplicationForm from "./components/ClientApplicationForm.jsx";
 const App = () => {
   const [admin, setCurrentAdmin] = useState(null);
 
-  const isAdminRoute = window.location.pathname.startsWith("/admin");
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    const onChange = () => setPath(window.location.pathname);
+    window.addEventListener("popstate", onChange);
+    return () => window.removeEventListener("popstate", onChange);
+  }, []);
+
+  const isAdminRoute = path.startsWith("/admin");
 
   useEffect(() => {
     const savedAdmin = getAdmin();
     if (savedAdmin) setCurrentAdmin(savedAdmin);
   }, []);
 
+  const go = (to) => {
+    window.history.pushState({}, "", to);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
+
   const handleSignIn = (adminData) => {
+    setAdmin(adminData);
     setCurrentAdmin(adminData);
-    window.history.pushState({}, "", "/admin");
+    go("/admin");
   };
 
   const handleLogout = () => {
     setAdmin(null);
     setCurrentAdmin(null);
-    window.history.pushState({}, "", "/");
+    go("/"); 
   };
 
   if (!isAdminRoute) {
