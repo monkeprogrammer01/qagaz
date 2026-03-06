@@ -9,7 +9,6 @@ import ClientApplicationForm from "./components/ClientApplicationForm.jsx";
 const App = () => {
   const [admin, setCurrentAdmin] = useState(null);
 
-  // простая маршрутизация без react-router
   const isAdminRoute = window.location.pathname.startsWith("/admin");
 
   useEffect(() => {
@@ -19,14 +18,13 @@ const App = () => {
 
   const handleSignIn = (adminData) => {
     setCurrentAdmin(adminData);
-    // после логина кидаем в админку
     window.history.pushState({}, "", "/admin");
   };
 
   const handleLogout = () => {
     setAdmin(null);
     setCurrentAdmin(null);
-    window.history.pushState({}, "", "/"); // обратно на клиентскую страницу
+    window.history.pushState({}, "", "/");
   };
 
   if (!isAdminRoute) {
