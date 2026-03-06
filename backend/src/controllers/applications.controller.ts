@@ -26,7 +26,6 @@ export const createApplication = async (req: Request, res: Response) => {
         clientName: String(clientName).trim(),
         phone: String(phone).trim(),
         room: String(room).trim(),
-        // если поля time нет в схеме — убери 2 строки ниже
         time: time ? new Date(time) : undefined,
         status: "new",
       },
