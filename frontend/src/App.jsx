@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAdmin, setAdmin } from '../api/applications.js';
+import { getAdmin, setAdmin } from '../api/admin.js';
 import Header from './components/Header.jsx';
 import SignIn from './components/SignIn.jsx';
 import AdminPanel from './components/AdminPanel.jsx';

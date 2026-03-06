@@ -353,7 +353,119 @@ body {
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
-/* Responsive */
+.modal-backdrop{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index: 99999;
+    padding: 16px;
+  }
+  
+  .modal-card{
+    background: #fff;
+    border-radius: 14px;
+    max-width: 560px;
+    width: 100%;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  }
+  
+.modal-header{
+    display:flex;
+    align-items:center;         
+    justify-content:flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .btn-ghost{
+    margin-right: 0;     
+    width: 36px;           
+    height: 36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius: 10px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+  }
+  
+  .btn-ghost:hover{
+    background: rgba(0,0,0,.06);
+  }
+  
+  .modal-title{
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+  
+  .modal-subtitle{
+    font-size: 12px;
+    opacity: .7;
+    margin-top: 2px;
+  }
+  
+  .modal-list{
+    margin-top: 10px;
+    max-height: 340px;
+    overflow: auto;
+    border: 1px solid #eee;
+    border-radius: 10px;
+  }
+  
+  .modal-list-item{
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border: 0;
+    background: #fff;
+    border-bottom: 1px solid #f2f2f2;
+    cursor: pointer;
+  }
+  
+  .modal-list-item:hover{
+    background: #f8f8f8;
+  }
+  
+  .modal-loading{
+    padding: 14px;
+    opacity: .8;
+  }
+  
+  .admin-email{ font-weight: 600; }
+  .admin-name{ font-size: 12px; opacity: .7; }
+  
+  .modal-footer{
+    display:flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  
+  .input-field{
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+  }
+  
+  .input-field:focus{
+    border-color: #aaa;
+  }
+  
+  .empty-state{
+    padding: 14px;
+    opacity: .7;
+  }
+
 @media (max-width: 768px) {
     .signin-card {
         padding: 36px 28px;

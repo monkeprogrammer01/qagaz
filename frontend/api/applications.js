@@ -1,79 +1,77 @@
-import axios from "axios"
+import axios from "axios";
 
 const API = axios.create({
-    baseURL: 'http://localhost:5001/api',
-    withCredentials: true
+  baseURL: "http://localhost:5001/api",
+  withCredentials: true,
+});
+
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });
 
 API.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            window.location.href = '/signin';
-        }
-        return Promise.reject(error);
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("currentAdmin");
+      window.location.href = "/signin";
     }
+    return Promise.reject(error);
+  }
 );
 
-export const getApplications = async () => {
-    const { data } = await API.get('/applications');
-    return data;
+export const getApplications = async (params) => {
+  const { data } = await API.get("/applications", { params });
+  return data;
 };
 
 export const createApplication = async (applicationData) => {
-    const { data } = await API.post('/applications', applicationData);
-    return data;
+  const { data } = await API.post("/applications", applicationData);
+  return data;
 };
 
 export const updateApplication = async (id, updateData) => {
-    const { data } = await API.patch(`/applications/${id}`, updateData);
-    return data;
+  const { data } = await API.patch(`/applications/${id}`, updateData);
+  return data;
 };
 
 export const deleteApplication = async (id) => {
-    const { data } = await API.delete(`/applications/${id}`);
-    return data;
+  const { data } = await API.delete(`/applications/${id}`);
+  return data;
 };
 
+export const initSampleData = async () => {
+  try {
+    const apps = await getApplications();
+    if (Array.isArray(apps) && apps.length > 0) return apps;
 
-export const getAdmin = () => {
-    const user = localStorage.getItem('currentAdmin');
-    return user ? JSON.parse(user) : null;
-};
+    const samples = [
+      {
+        clientName: "John Smith",
+        phone: "87755920999",
+        room: "H401",
+        time: "2026-02-15T14:30:00.000Z",
+      },
+      {
+        clientName: "Sarah Johnson",
+        phone: "87771234567",
+        room: "H402",
+        time: "2026-02-16T10:00:00.000Z",
+      },
+    ];
 
-export const setAdmin = (admin) => {
-    if (admin) {
-        localStorage.setItem('currentAdmin', JSON.stringify(admin));
-    } else {
-        localStorage.removeItem('currentAdmin');
+    for (const s of samples) {
+      await createApplication(s);
     }
+
+    return await getApplications();
+  } catch (e) {
+    console.error("initSampleData failed:", e);
+    return [];
+  }
 };
 
-// Демо-данные для первого запуска
-export const initSampleData = () => {
-    if (getApplications().length === 0) {
-        const sampleBookings = [
-            {
-                id: 1,
-                clientName: 'John Smith',
-                phone: '87755920999',
-                room: 'H401',
-                time: '2026-02-15T14:30:00',
-                status: 'new',
-                adminId: '',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 2,
-                clientName: 'Sarah Johnson',
-                phone: '87771234567',
-                room: 'H402',
-                time: '2026-02-16T10:00:00',
-                status: 'assigned',
-                adminId: 'admin1',
-                createdAt: new Date().toISOString()
-            }
-        ];
-        saveBookings(sampleBookings);
-    }
-};
+export default API;
