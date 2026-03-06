@@ -20,7 +20,7 @@ const AssignAdminModal = ({ open, admins, loading, onClose, onSelect }) => {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <div>
+          <div className="modal-left">
             <div className="modal-title">Assign admin</div>
             <div className="modal-subtitle">Choose an admin from the list</div>
           </div>
