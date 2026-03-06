@@ -18,14 +18,21 @@ model Application {
   clientName String
   phone      String
   room       String
+  time       DateTime @default(now())
   status     String   @default("new")
+
+  adminId    Int?
+  admin      Admin?   @relation(fields: [adminId], references: [id])
+
   createdAt  DateTime @default(now())
 }
 
 model Admin {
   id        Int      @id @default(autoincrement())
-  email     String  @unique
+  email     String   @unique
   password  String
-  name String
+  name      String
   createdAt DateTime @default(now())
+
+  applications Application[]
 }

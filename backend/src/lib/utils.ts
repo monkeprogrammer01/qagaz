@@ -46,37 +46,50 @@ export const verifyToken = (token: string) => {
     }
 }
 
-export const authMiddleware = async (req: Request, res:  Response, next: NextFunction) => {
-    try {
-        let token = null;
-        if (req.headers.authorization) {
-            token = req.headers.authorization.split(" ")[1]
-        } else {
-            token = req.cookies.jwt;
-        }
-        if (!token) {
-            return res.status(400).json({message: "Token Not Found"})
-        }
-        const result = verifyToken(token);
-        if (!result.success) {
-            return res.status(401).json({
-                message: "Invalid Token"
-            })
-        }
-
-        const adminIdAsInt = parseInt(result.adminId as string);
-        if (isNaN(adminIdAsInt)) {
-            return res.status(400).json({ message: "Invalid ID format in token" });
-        }
-
-        const admin = await prisma.admin.findUnique({where: {id: adminIdAsInt}})
-        if (!admin) {
-            return res.status(404).json({message: "Admin not found"})
-        }
-
-        req.adminId = result.adminId;
-        next();
-    } catch (error: any) {
-        return res.status(500).json({message: "Internal server error"})
+declare global {
+  namespace Express {
+    interface Request {
+      adminId?: string;
     }
+  }
 }
+
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const auth = req.headers.authorization;
+    const bearerToken = auth?.startsWith("Bearer ") ? auth.slice(7) : null;
+
+    const cookieToken = (req as any).cookies?.jwt;
+
+    const token = bearerToken || cookieToken;
+
+    if (!token) {
+      return res.status(401).json({ message: "Token not found" });
+    }
+
+    const result = verifyToken(token);
+    if (!result.success || !result.adminId) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const adminIdAsInt = Number(result.adminId);
+    if (!Number.isInteger(adminIdAsInt)) {
+      return res.status(401).json({ message: "Invalid ID format in token" });
+    }
+
+    const admin = await prisma.admin.findUnique({
+      where: { id: adminIdAsInt },
+      select: { id: true },
+    });
+
+    if (!admin) {
+      return res.status(401).json({ message: "Admin not found" });
+    }
+
+    req.adminId = String(admin.id);
+    return next();
+  } catch (error) {
+    console.error("authMiddleware error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

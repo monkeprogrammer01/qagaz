@@ -1,11 +1,22 @@
 import express from "express";
 import { createApplication, getAllApplications, getApplicationById, updateApplicationById, deleteApplicationById } from "../controllers/applications.controller";
+import { authMiddleware } from "../lib/utils";
 
 const router = express.Router();
-router.get("/", getAllApplications) // here admins or user will get applications (if user they will get its own applications only)
-router.post("/", createApplication) // here client can post new application
-router.get("/:id", getApplicationById) // here client or admins can get application by id 
-router.delete("/:id", deleteApplicationById) // deleting application by id
-router.patch("/:id", updateApplicationById) // updating application by id (admins will change status of each application or client changes its room for instance)
+
+// PUBLIC: client creates application
+router.post("/", createApplication);
+
+// ADMIN: see all applications
+router.get("/", authMiddleware, getAllApplications);
+
+// ADMIN: get by id
+router.get("/:id", authMiddleware, getApplicationById);
+
+// ADMIN: update (status, adminEmail, room, etc.)
+router.patch("/:id", authMiddleware, updateApplicationById);
+
+// ADMIN: delete
+router.delete("/:id", authMiddleware, deleteApplicationById);
 
 export default router;

@@ -57,6 +57,7 @@ interface LoginBody {
 
 export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
     try {
+        console.log("login controller")
         const { email, password } = req.body;
         if (!email || !password) return res.status(400).json({ error: "Email and password are required." })
         const admin = await prisma.admin.findUnique({
@@ -105,3 +106,24 @@ export const profile = async (req: Request<{}, {}, ProfileBody>, res: Response) 
         return res.status(500).json({error: "Internal server error."})
     }
 }
+
+export const admins = async (req: Request, res: Response) => {
+    try {
+      const admins = await prisma.admin.findMany({
+        select: {
+          id: true,
+          email: true,
+          name: true,
+        },
+        orderBy: { email: "asc" },
+      });
+  
+      return res.status(200).json({
+        success: true,
+        admins,
+      });
+    } catch (error) {
+      console.error("Error in admins controller.", error);
+      return res.status(500).json({ error: "Internal server error." });
+    }
+  };
